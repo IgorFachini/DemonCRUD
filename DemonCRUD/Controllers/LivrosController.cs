@@ -71,7 +71,7 @@ namespace DemonCRUD.Controllers
         public ActionResult Create()
         {
             ViewBag.GeneroId = new SelectList(db.Generos, "Id", "Nome");
-            return View();
+            return PartialView();
         }
 
         // POST: Livros/Create
