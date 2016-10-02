@@ -33,10 +33,23 @@
         $(document).ready(configurarControles);
 
         function configurarControles() {
+
+            var traducao = {
+                infos: "Exibindo {{ctx.start}} até {{ctx.end}} de {{ctx.total}} registros.",
+                loading: "Carregando",
+                noResults: "Não ha dados para exibir",
+                refresh: " Atualizar",
+                search: "Pesquisar"
+            };
+
             $("#gridDados").bootgrid(
                 {
                     ajax: true,
-                    url:"@Url.Action("Listar")"
+                    url: "@Url.Action("Listar")",
+                    labels: traducao,
+                    searchSettings: {
+                        characters: 4
+                    }
                 });
         }
 

@@ -23,7 +23,7 @@ namespace DemonCRUD.Controllers
             return View();
         }
 
-        public JsonResult Listar(Livro livro,int current = 1, int rowCount = 5) {
+        public JsonResult Listar(string searchPhrase,int current = 1, int rowCount = 5) {
             string chave = Request.Form.AllKeys.Where(k => k.StartsWith("sort")).First();
             string ordenacao = Request[chave];
             string campo = chave.Replace("sort[", String.Empty).Replace("]", String.Empty);
@@ -31,20 +31,13 @@ namespace DemonCRUD.Controllers
 
             int total = livros.Count();
 
-            if (!String.IsNullOrWhiteSpace(livro.Titulo)) {
-                livros = livros.Where(l => l.Titulo.Contains(livro.Titulo));
-            }
+            if (!String.IsNullOrWhiteSpace(searchPhrase)) {
+                int ano = 0;
+                int.TryParse(searchPhrase, out ano);
 
-            if (!String.IsNullOrWhiteSpace(livro.Autor)) {
-                livros = livros.Where(l => l.Autor.Contains(livro.Autor));
-            }
-
-            if(livro.AnoEdicao != 0) {
-                livros = livros.Where(l => l.AnoEdicao == livro.AnoEdicao);
-            }
-
-            if (livro.Valor != decimal.Zero) {
-                livros = livros.Where(l => l.Valor == livro.Valor);
+                decimal valor = 0.0m;
+                decimal.TryParse(searchPhrase, out valor);
+                livros = livros.Where("Titulo.Contains(@0) OR Autor.Contains(@0) OR AnoEdicao == @1 OR Valor = @2", searchPhrase, ano, valor);
             }
 
             string campoOrdenacao = String.Format("{0} {1}", campo, ordenacao);
