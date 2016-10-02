@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
@@ -22,7 +23,10 @@ namespace DemonCRUD.Controllers
             return View();
         }
 
-        public JsonResult Listar(Livro livro,int pagina = 1, int registros = 5) {
+        public JsonResult Listar(Livro livro,int current = 1, int rowCount = 5) {
+            string chave = Request.Form.AllKeys.Where(k => k.StartsWith("sort")).First();
+            string ordenacao = Request[chave];
+            string campo = chave.Replace("sort[", String.Empty).Replace("]", String.Empty);
             var livros = db.Livros.Include(l => l.Genero);
 
             int total = livros.Count();
@@ -43,12 +47,14 @@ namespace DemonCRUD.Controllers
                 livros = livros.Where(l => l.Valor == livro.Valor);
             }
 
-            var livrosPaginados = livros.OrderBy(l => l.Titulo).Skip((pagina -1)* registros).Take(registros);
+            string campoOrdenacao = String.Format("{0} {1}", campo, ordenacao);
+
+            var livrosPaginados = livros.OrderBy(campoOrdenacao).Skip((current -1)* rowCount).Take(rowCount);
 
             return Json(new {
                 rows = livrosPaginados.ToList(),
-                current = pagina,
-                rowCount = registros,
+                current = current,
+                rowCount = rowCount,
                 total = total
             }
             ,JsonRequestBehavior.AllowGet);
