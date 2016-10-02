@@ -64,7 +64,7 @@ namespace DemonCRUD.Controllers
             {
                 return HttpNotFound();
             }
-            return View(livro);
+            return PartialView(livro);
         }
 
         // GET: Livros/Create
@@ -105,7 +105,7 @@ namespace DemonCRUD.Controllers
                 return HttpNotFound();
             }
             ViewBag.GeneroId = new SelectList(db.Generos, "Id", "Nome", livro.GeneroId);
-            return View(livro);
+            return PartialView(livro);
         }
 
         // POST: Livros/Edit/5
@@ -137,7 +137,7 @@ namespace DemonCRUD.Controllers
             {
                 return HttpNotFound();
             }
-            return View(livro);
+            return PartialView(livro);
         }
 
         // POST: Livros/Delete/5
