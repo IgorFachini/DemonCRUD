@@ -22,8 +22,10 @@ namespace DemonCRUD.Controllers
             return View();
         }
 
-        public PartialViewResult Listar(Livro livro,int Pagina = 1, int registros = 5) {
+        public JsonResult Listar(Livro livro,int pagina = 1, int registros = 5) {
             var livros = db.Livros.Include(l => l.Genero);
+
+            int total = livros.Count();
 
             if (!String.IsNullOrWhiteSpace(livro.Titulo)) {
                 livros = livros.Where(l => l.Titulo.Contains(livro.Titulo));
@@ -41,9 +43,15 @@ namespace DemonCRUD.Controllers
                 livros = livros.Where(l => l.Valor == livro.Valor);
             }
 
-            var livrosPaginados = livros.OrderBy(l => l.Titulo).Skip((Pagina -1)* registros).Take(registros);
+            var livrosPaginados = livros.OrderBy(l => l.Titulo).Skip((pagina -1)* registros).Take(registros);
 
-            return PartialView("_Listar", livrosPaginados.ToList());
+            return Json(new {
+                rows = livrosPaginados.ToList(),
+                current = pagina,
+                rowCount = registros,
+                total = total
+            }
+            ,JsonRequestBehavior.AllowGet);
         }
         // GET: Livros/Details/5
         public ActionResult Details(int? id)
