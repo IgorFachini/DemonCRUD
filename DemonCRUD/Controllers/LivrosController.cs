@@ -79,17 +79,18 @@ namespace DemonCRUD.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Titulo,Autor,AnoEdicao,Valor,GeneroId")] Livro livro)
+        public JsonResult Create([Bind(Include = "Id,Titulo,Autor,AnoEdicao,Valor,GeneroId")] Livro livro)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 db.Livros.Add(livro);
                 db.SaveChanges();
-                return RedirectToAction("Index");
-            }
 
-            ViewBag.GeneroId = new SelectList(db.Generos, "Id", "Nome", livro.GeneroId);
-            return View(livro);
+                return Json(new { resultado = true, mensagem = "Livro cadastrado com sucesso" });
+            } else {
+                IEnumerable<ModelError> erros = ModelState.Values.SelectMany(item => item.Errors);
+
+                return Json(new { resultado = false, mensagem = erros });
+            }           
         }
 
         // GET: Livros/Edit/5
